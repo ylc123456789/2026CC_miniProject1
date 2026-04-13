@@ -1,9 +1,5 @@
-from pathlib import Path
-import sys
-
-ROOT_DIR = Path(__file__).resolve().parents[2]
-if str(ROOT_DIR) not in sys.path:
-    sys.path.append(str(ROOT_DIR))
+import argparse
+import json
 
 
 def handle_submission_event(event: dict) -> dict:
@@ -17,5 +13,14 @@ def handle_submission_event(event: dict) -> dict:
     }
 
 
+def main() -> None:
+    parser = argparse.ArgumentParser(description="Local test for submission event function.")
+    parser.add_argument("submission_id", help="Submission ID")
+    args = parser.parse_args()
+
+    result = handle_submission_event({"submission_id": args.submission_id})
+    print(json.dumps(result, indent=2, ensure_ascii=False))
+
+
 if __name__ == "__main__":
-    print(handle_submission_event({"submission_id": "example-id"}))
+    main()

@@ -26,7 +26,11 @@ def health() -> dict:
 
 @app.get("/")
 def form_page(request: Request):
-    return templates.TemplateResponse("index.html", {"request": request})
+    return templates.TemplateResponse(
+        request,
+        "index.html",
+        {"request": request}
+    )
 
 
 @app.post("/submit")
@@ -60,6 +64,7 @@ def result_page(request: Request, submission_id: str):
     record = response.json()
 
     return templates.TemplateResponse(
+        request,
         "result.html",
         {
             "request": request,
