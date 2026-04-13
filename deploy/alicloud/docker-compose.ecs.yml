@@ -1,0 +1,51 @@
+services:
+  data-service:
+    build:
+      context: ../..
+      dockerfile: data-service/Dockerfile
+    container_name: campusbuzz-data-service
+    restart: unless-stopped
+    ports:
+      - "8002:8002"
+    volumes:
+      - data_service_storage:/app/data
+
+  workflow-service:
+    build:
+      context: ../..
+      dockerfile: workflow-service/Dockerfile
+    container_name: campusbuzz-workflow-service
+    restart: unless-stopped
+    ports:
+      - "8001:8001"
+    environment:
+      APP_MODE: cloud
+      DATA_SERVICE_URL: http://data-service:8002
+      SUBMISSION_EVENT_FUNCTION_URL: ${SUBMISSION_EVENT_FUNCTION_URL}
+      PROCESSING_FUNCTION_URL: ${PROCESSING_FUNCTION_URL}
+      RESULT_UPDATE_FUNCTION_URL: ${RESULT_UPDATE_FUNCTION_URL}
+      FUNCTION_AUTH_TOKEN: ${FUNCTION_AUTH_TOKEN}
+      REQUEST_TIMEOUT_SECONDS: ${REQUEST_TIMEOUT_SECONDS:-15}
+    depends_on:
+      - data-service
+
+  presentation-service:
+    build:
+      context: ../..
+      dockerfile: presentation-service/Dockerfile
+    container_name: campusbuzz-presentation-service
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    environment:
+      APP_MODE: cloud
+      WORKFLOW_SERVICE_URL: http://workflow-service:8001
+      DATA_SERVICE_URL: http://data-service:8002
+      RESULT_REFRESH_SECONDS: ${RESULT_REFRESH_SECONDS:-2}
+      REQUEST_TIMEOUT_SECONDS: ${REQUEST_TIMEOUT_SECONDS:-15}
+    depends_on:
+      - workflow-service
+      - data-service
+
+volumes:
+  data_service_storage:

@@ -2,25 +2,48 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Submission Result</title>
+    <link rel="stylesheet" href="/static/styles.css">
+    {% if auto_refresh %}
+    <meta http-equiv="refresh" content="{{ refresh_seconds }}">
+    {% endif %}
 </head>
 <body>
-    <h1>Submission Result</h1>
+<div class="page">
+    <div class="card">
+        <div class="badge">{{ mode }} Mode</div>
+        <h1>Submission Result</h1>
+        <p class="subtitle">Record ID: {{ record.id }}</p>
 
-    <p><strong>ID:</strong> {{ record.id }}</p>
-    <p><strong>Processing State:</strong> {{ record.processing_state }}</p>
-    <p><strong>Final Status:</strong> {{ record.final_status }}</p>
-    <p><strong>Category:</strong> {{ record.category }}</p>
-    <p><strong>Priority:</strong> {{ record.priority }}</p>
-    <p><strong>Note:</strong> {{ record.note }}</p>
+        {% if auto_refresh %}
+        <div class="info-box">
+            Background processing is still running. This page refreshes every {{ refresh_seconds }} second(s).
+        </div>
+        {% endif %}
 
-    <hr>
-    <p><strong>Title:</strong> {{ record.title }}</p>
-    <p><strong>Description:</strong> {{ record.description }}</p>
-    <p><strong>Location:</strong> {{ record.location }}</p>
-    <p><strong>Date:</strong> {{ record.date }}</p>
-    <p><strong>Organiser Name:</strong> {{ record.organiser_name }}</p>
+        <div class="result-grid">
+            <div class="result-item"><strong>Processing State</strong><span>{{ record.processing_state }}</span></div>
+            <div class="result-item"><strong>Final Status</strong><span>{{ record.final_status or 'Pending' }}</span></div>
+            <div class="result-item"><strong>Category</strong><span>{{ record.category or 'Pending' }}</span></div>
+            <div class="result-item"><strong>Priority</strong><span>{{ record.priority or 'Pending' }}</span></div>
+            <div class="result-item full-width"><strong>Note</strong><span>{{ record.note or 'Processing has not finished yet.' }}</span></div>
+        </div>
 
-    <p><a href="/">Submit another event</a></p>
+        <hr>
+
+        <div class="detail-grid">
+            <div><strong>Title</strong><p>{{ record.title }}</p></div>
+            <div><strong>Location</strong><p>{{ record.location }}</p></div>
+            <div><strong>Date</strong><p>{{ record.date }}</p></div>
+            <div><strong>Organiser Name</strong><p>{{ record.organiser_name }}</p></div>
+            <div class="full-width"><strong>Description</strong><p>{{ record.description }}</p></div>
+        </div>
+
+        <div class="actions">
+            <a class="secondary-link" href="/">Submit another event</a>
+        </div>
+    </div>
+</div>
 </body>
 </html>

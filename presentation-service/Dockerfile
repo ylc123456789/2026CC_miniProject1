@@ -5,6 +5,7 @@ WORKDIR /app
 COPY presentation-service/requirements.txt /app/requirements.txt
 RUN pip install --no-cache-dir -r /app/requirements.txt
 
+COPY shared /app/shared
 COPY presentation-service/app /app/app
 COPY presentation-service/templates /app/templates
 COPY presentation-service/static /app/static

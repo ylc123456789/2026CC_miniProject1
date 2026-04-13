@@ -1,0 +1,163 @@
+:root {
+    color-scheme: light;
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+body {
+    margin: 0;
+    background: #f4f7fb;
+    color: #1f2937;
+}
+
+.page {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 32px 16px;
+    box-sizing: border-box;
+}
+
+.card {
+    width: 100%;
+    max-width: 840px;
+    background: #ffffff;
+    border-radius: 18px;
+    box-shadow: 0 12px 36px rgba(15, 23, 42, 0.12);
+    padding: 32px;
+    box-sizing: border-box;
+}
+
+.badge {
+    display: inline-block;
+    background: #dbeafe;
+    color: #1d4ed8;
+    border-radius: 999px;
+    padding: 6px 12px;
+    font-size: 14px;
+    margin-bottom: 16px;
+}
+
+h1 {
+    margin: 0 0 8px;
+}
+
+.subtitle {
+    margin: 0 0 24px;
+    color: #475569;
+}
+
+.form-grid,
+.result-grid,
+.detail-grid {
+    display: grid;
+    gap: 18px;
+}
+
+.form-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.result-grid,
+.detail-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+label,
+.result-item,
+.detail-grid > div,
+.info-box {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+label span,
+.result-item strong,
+.detail-grid strong {
+    font-size: 14px;
+    color: #475569;
+}
+
+input,
+textarea {
+    border: 1px solid #cbd5e1;
+    border-radius: 12px;
+    padding: 12px 14px;
+    font-size: 15px;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+textarea {
+    resize: vertical;
+}
+
+button,
+.secondary-link {
+    border: none;
+    border-radius: 12px;
+    padding: 12px 18px;
+    font-size: 15px;
+    cursor: pointer;
+    text-decoration: none;
+}
+
+button {
+    background: #2563eb;
+    color: #ffffff;
+}
+
+.secondary-link {
+    display: inline-block;
+    background: #e2e8f0;
+    color: #0f172a;
+}
+
+.actions {
+    margin-top: 8px;
+}
+
+.info-box {
+    background: #eff6ff;
+    border: 1px solid #bfdbfe;
+    border-radius: 12px;
+    padding: 14px;
+    margin-bottom: 20px;
+    color: #1d4ed8;
+}
+
+.result-item,
+.detail-grid > div {
+    background: #f8fafc;
+    border-radius: 14px;
+    padding: 14px;
+}
+
+.result-item span,
+.detail-grid p {
+    margin: 0;
+    font-size: 15px;
+}
+
+.full-width {
+    grid-column: 1 / -1;
+}
+
+hr {
+    border: 0;
+    border-top: 1px solid #e2e8f0;
+    margin: 26px 0;
+}
+
+@media (max-width: 700px) {
+    .card {
+        padding: 22px;
+    }
+
+    .form-grid,
+    .result-grid,
+    .detail-grid {
+        grid-template-columns: 1fr;
+    }
+}

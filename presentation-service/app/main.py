@@ -1,10 +1,10 @@
-import os
 from pathlib import Path
 import sys
 
 import requests
 from fastapi import FastAPI, Form, Request
 from fastapi.responses import RedirectResponse
+from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 
 CURRENT_FILE = Path(__file__).resolve()
@@ -18,18 +18,32 @@ else:
 if str(ROOT_DIR) not in sys.path:
     sys.path.append(str(ROOT_DIR))
 
-WORKFLOW_SERVICE_URL = os.getenv("WORKFLOW_SERVICE_URL", "http://localhost:8001")
-DATA_SERVICE_URL = os.getenv("DATA_SERVICE_URL", "http://localhost:8002")
+from shared.config import (
+    get_data_service_url,
+    get_request_timeout,
+    get_result_refresh_seconds,
+    get_workflow_service_url,
+    is_cloud_mode,
+)
+from shared.constants import PROCESSING_PENDING
+
+WORKFLOW_SERVICE_URL = get_workflow_service_url()
+DATA_SERVICE_URL = get_data_service_url()
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 templates = Jinja2Templates(directory=str(BASE_DIR / "templates"))
 
 app = FastAPI(title="Presentation Service")
+app.mount("/static", StaticFiles(directory=str(BASE_DIR / "static")), name="static")
 
 
 @app.get("/health")
 def health() -> dict:
-    return {"status": "ok", "service": "presentation-service"}
+    return {
+        "status": "ok",
+        "service": "presentation-service",
+        "mode": "cloud" if is_cloud_mode() else "local",
+    }
 
 
 @app.get("/")
@@ -37,7 +51,10 @@ def form_page(request: Request):
     return templates.TemplateResponse(
         request,
         "index.html",
-        {"request": request}
+        {
+            "request": request,
+            "mode": "Cloud" if is_cloud_mode() else "Local",
+        },
     )
 
 
@@ -57,7 +74,11 @@ def submit_form(
         "organiser_name": organiser_name,
     }
 
-    response = requests.post(f"{WORKFLOW_SERVICE_URL}/submit", json=payload, timeout=10)
+    response = requests.post(
+        f"{WORKFLOW_SERVICE_URL}/submit",
+        json=payload,
+        timeout=get_request_timeout(),
+    )
     response.raise_for_status()
     result = response.json()
 
@@ -67,9 +88,14 @@ def submit_form(
 
 @app.get("/results/{submission_id}")
 def result_page(request: Request, submission_id: str):
-    response = requests.get(f"{DATA_SERVICE_URL}/submissions/{submission_id}", timeout=10)
+    response = requests.get(
+        f"{DATA_SERVICE_URL}/submissions/{submission_id}",
+        timeout=get_request_timeout(),
+    )
     response.raise_for_status()
     record = response.json()
+
+    auto_refresh = record.get("processing_state") == PROCESSING_PENDING and is_cloud_mode()
 
     return templates.TemplateResponse(
         request,
@@ -77,5 +103,8 @@ def result_page(request: Request, submission_id: str):
         {
             "request": request,
             "record": record,
+            "auto_refresh": auto_refresh,
+            "refresh_seconds": get_result_refresh_seconds(),
+            "mode": "Cloud" if is_cloud_mode() else "Local",
         },
     )
