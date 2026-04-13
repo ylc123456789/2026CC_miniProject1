@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Submission Result</title>
+</head>
+<body>
+    <h1>Submission Result</h1>
+
+    <p><strong>ID:</strong> {{ record.id }}</p>
+    <p><strong>Processing State:</strong> {{ record.processing_state }}</p>
+    <p><strong>Final Status:</strong> {{ record.final_status }}</p>
+    <p><strong>Category:</strong> {{ record.category }}</p>
+    <p><strong>Priority:</strong> {{ record.priority }}</p>
+    <p><strong>Note:</strong> {{ record.note }}</p>
+
+    <hr>
+    <p><strong>Title:</strong> {{ record.title }}</p>
+    <p><strong>Description:</strong> {{ record.description }}</p>
+    <p><strong>Location:</strong> {{ record.location }}</p>
+    <p><strong>Date:</strong> {{ record.date }}</p>
+    <p><strong>Organiser Name:</strong> {{ record.organiser_name }}</p>
+
+    <p><a href="/">Submit another event</a></p>
+</body>
+</html>
