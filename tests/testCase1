@@ -1,0 +1,48 @@
+1. Approved / Academic
+{
+  "title": "AI Seminar for Students",
+  "description": "This seminar introduces cloud computing trends, distributed systems, and academic opportunities for students.",
+  "location": "Engineering Building",
+  "date": "2026-04-22",
+  "organiser_name": "School Office"
+}
+2. Incomplete
+{
+  "title": "Student Club Meetup",
+  "description": "This social club event welcomes students to meet new members and learn about upcoming activities on campus.",
+  "location": "",
+  "date": "2026-04-25",
+  "organiser_name": "Student Union"
+}
+3. Invalid date
+{
+  "title": "Cloud Seminar",
+  "description": "This seminar explains the foundations of cloud computing and distributed systems for new students.",
+  "location": "Room B202",
+  "date": "2026-4-20",
+  "organiser_name": "Computer Science Department"
+}
+4. Short description
+{
+  "title": "Cloud Lecture",
+  "description": "Short lecture intro.",
+  "location": "Lecture Hall 1",
+  "date": "2026-04-20",
+  "organiser_name": "CS Dept"
+}
+5. Opportunity priority
+{
+  "title": "Career Seminar and Club Event",
+  "description": "This seminar discusses internship and recruitment opportunities for students and also includes club networking activities.",
+  "location": "Main Hall",
+  "date": "2026-04-28",
+  "organiser_name": "Careers Team"
+}
+6. General
+{
+  "title": "Campus Information Session",
+  "description": "This event provides detailed information about upcoming campus arrangements and services for all students.",
+  "location": "Student Centre",
+  "date": "2026-04-30",
+  "organiser_name": "Campus Office"
+}
