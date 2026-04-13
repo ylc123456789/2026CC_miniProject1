@@ -8,6 +8,9 @@ if str(ROOT_DIR) not in sys.path:
     sys.path.append(str(ROOT_DIR))
 
 from shared.schemas import SubmissionCreate, WorkflowSubmitResponse
+from functions.submission_event_function.handler import handle_submission_event
+from functions.processing_function.handler import handle_processing
+from functions.result_update_function.handler import handle_result_update
 
 DATA_SERVICE_URL = "http://localhost:8002"
 
@@ -21,6 +24,7 @@ def health() -> dict:
 
 @app.post("/submit", response_model=WorkflowSubmitResponse)
 def submit(payload: SubmissionCreate) -> WorkflowSubmitResponse:
+    # Step 1: create submission record in data-service
     response = requests.post(
         f"{DATA_SERVICE_URL}/submissions",
         json=payload.model_dump(),
@@ -31,11 +35,26 @@ def submit(payload: SubmissionCreate) -> WorkflowSubmitResponse:
         raise HTTPException(status_code=500, detail="Failed to create submission record")
 
     created = response.json()
+    submission_id = created["id"]
 
-    # Local stage: we only simulate event publishing here.
-    return WorkflowSubmitResponse(
-        submission_id=created["id"],
-        processing_state=created["processing_state"],
-        event_dispatched=False,
-        message="Submission record created. Event publishing will be connected next.",
-    )
+    # Step 2: local auto-trigger pipeline
+    try:
+        event_result = handle_submission_event({"submission_id": submission_id})
+        processing_result = handle_processing(event_result["submission_id"])
+        updated_record = handle_result_update(processing_result)
+
+        return WorkflowSubmitResponse(
+            submission_id=updated_record["id"],
+            processing_state=updated_record["processing_state"],
+            event_dispatched=True,
+            message="Submission created and processed automatically in local mode.",
+        )
+
+    except Exception as exc:
+        # If local auto-processing fails, keep the created record and return pending state
+        return WorkflowSubmitResponse(
+            submission_id=submission_id,
+            processing_state=created["processing_state"],
+            event_dispatched=False,
+            message=f"Submission record created, but local auto-processing failed: {str(exc)}",
+        )
