@@ -1,9 +1,18 @@
+import os
 from pathlib import Path
 import sys
+
 import requests
 from fastapi import FastAPI, HTTPException
 
-ROOT_DIR = Path(__file__).resolve().parents[2]
+CURRENT_FILE = Path(__file__).resolve()
+for candidate in [CURRENT_FILE.parents[i] for i in range(min(6, len(CURRENT_FILE.parents)))]:
+    if (candidate / "shared").exists():
+        ROOT_DIR = candidate
+        break
+else:
+    ROOT_DIR = CURRENT_FILE.parents[min(2, len(CURRENT_FILE.parents) - 1)]
+
 if str(ROOT_DIR) not in sys.path:
     sys.path.append(str(ROOT_DIR))
 
@@ -12,7 +21,7 @@ from functions.submission_event_function.handler import handle_submission_event
 from functions.processing_function.handler import handle_processing
 from functions.result_update_function.handler import handle_result_update
 
-DATA_SERVICE_URL = "http://localhost:8002"
+DATA_SERVICE_URL = os.getenv("DATA_SERVICE_URL", "http://localhost:8002")
 
 app = FastAPI(title="Workflow Service")
 
@@ -24,7 +33,6 @@ def health() -> dict:
 
 @app.post("/submit", response_model=WorkflowSubmitResponse)
 def submit(payload: SubmissionCreate) -> WorkflowSubmitResponse:
-    # Step 1: create submission record in data-service
     response = requests.post(
         f"{DATA_SERVICE_URL}/submissions",
         json=payload.model_dump(),
@@ -37,7 +45,6 @@ def submit(payload: SubmissionCreate) -> WorkflowSubmitResponse:
     created = response.json()
     submission_id = created["id"]
 
-    # Step 2: local auto-trigger pipeline
     try:
         event_result = handle_submission_event({"submission_id": submission_id})
         processing_result = handle_processing(event_result["submission_id"])
@@ -51,7 +58,6 @@ def submit(payload: SubmissionCreate) -> WorkflowSubmitResponse:
         )
 
     except Exception as exc:
-        # If local auto-processing fails, keep the created record and return pending state
         return WorkflowSubmitResponse(
             submission_id=submission_id,
             processing_state=created["processing_state"],

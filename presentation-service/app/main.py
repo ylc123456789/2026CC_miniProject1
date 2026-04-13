@@ -1,17 +1,25 @@
+import os
 from pathlib import Path
 import sys
-import requests
 
+import requests
 from fastapi import FastAPI, Form, Request
 from fastapi.responses import RedirectResponse
 from fastapi.templating import Jinja2Templates
 
-ROOT_DIR = Path(__file__).resolve().parents[2]
+CURRENT_FILE = Path(__file__).resolve()
+for candidate in [CURRENT_FILE.parents[i] for i in range(min(6, len(CURRENT_FILE.parents)))]:
+    if (candidate / "shared").exists():
+        ROOT_DIR = candidate
+        break
+else:
+    ROOT_DIR = CURRENT_FILE.parents[min(2, len(CURRENT_FILE.parents) - 1)]
+
 if str(ROOT_DIR) not in sys.path:
     sys.path.append(str(ROOT_DIR))
 
-WORKFLOW_SERVICE_URL = "http://localhost:8001"
-DATA_SERVICE_URL = "http://localhost:8002"
+WORKFLOW_SERVICE_URL = os.getenv("WORKFLOW_SERVICE_URL", "http://localhost:8001")
+DATA_SERVICE_URL = os.getenv("DATA_SERVICE_URL", "http://localhost:8002")
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 templates = Jinja2Templates(directory=str(BASE_DIR / "templates"))

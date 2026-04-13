@@ -20,3 +20,6 @@ User views the result.
 ## Local Development Strategy
 At the local stage, services are developed and tested first.
 Serverless functions are implemented as Python handlers before deployment to Alibaba Cloud Function Compute.
+## Docker Stage
+For the Docker stage, the three container-based services are packaged with separate Dockerfiles and started together using Docker Compose.
+Service-to-service URLs are controlled through environment variables so the same code works both locally and inside Docker.

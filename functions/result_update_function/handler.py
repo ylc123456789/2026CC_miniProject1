@@ -1,16 +1,25 @@
+import argparse
+import json
+import os
 from pathlib import Path
 import sys
-import json
-import argparse
+
 import requests
 
-ROOT_DIR = Path(__file__).resolve().parents[2]
+CURRENT_FILE = Path(__file__).resolve()
+for candidate in [CURRENT_FILE.parents[i] for i in range(min(6, len(CURRENT_FILE.parents)))]:
+    if (candidate / "shared").exists():
+        ROOT_DIR = candidate
+        break
+else:
+    ROOT_DIR = CURRENT_FILE.parents[min(2, len(CURRENT_FILE.parents) - 1)]
+
 if str(ROOT_DIR) not in sys.path:
     sys.path.append(str(ROOT_DIR))
 
 from functions.processing_function.handler import handle_processing
 
-DATA_SERVICE_URL = "http://localhost:8002"
+DATA_SERVICE_URL = os.getenv("DATA_SERVICE_URL", "http://localhost:8002")
 
 
 def handle_result_update(result: dict) -> dict:
